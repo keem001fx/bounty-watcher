@@ -1,0 +1,17 @@
+{
+  "queries": [
+    { "label": "General bounty search", "q": "label:bounty state:open" },
+    { "label": "Coolify", "q": "repo:coollabsio/coolify label:Bounty state:open" },
+    { "label": "Terminator (mediar-ai)", "q": "repo:mediar-ai/terminator label:Bounty state:open" }
+  ],
+  "blocked_owners": [
+    "zhangjiayang6835-cyber"
+  ],
+  "blocked_keywords": [
+    "no code",
+    "agentic",
+    "1000 usd",
+    "urgent"
+  ],
+  "require_any_keyword": []
+}
