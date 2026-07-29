@@ -1,17 +1,23 @@
 {
   "queries": [
-    { "label": "General bounty search", "q": "label:bounty state:open" },
-    { "label": "Coolify", "q": "repo:coollabsio/coolify label:Bounty state:open" },
-    { "label": "Terminator (mediar-ai)", "q": "repo:mediar-ai/terminator label:Bounty state:open" }
+    { "label": "General bounty search", "q": "label:bounty state:open is:issue" },
+    { "label": "Coolify", "q": "repo:coollabsio/coolify label:Bounty state:open is:issue" },
+    { "label": "Terminator (mediar-ai)", "q": "repo:mediar-ai/terminator label:Bounty state:open is:issue" }
   ],
   "blocked_owners": [
-    "zhangjiayang6835-cyber"
+    "zhangjiayang6835-cyber",
+    "NSPG13"
   ],
   "blocked_keywords": [
     "no code",
     "agentic",
     "1000 usd",
-    "urgent"
+    "urgent",
+    "usdc",
+    "agent-bounties",
+    "ai-agent-welcome",
+    "[meta]",
+    "[direct]"
   ],
   "require_any_keyword": []
 }
