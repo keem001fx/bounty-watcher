@@ -1,5 +1,9 @@
 name: Bounty Watcher
 
+concurrency:
+  group: bounty-watcher
+  cancel-in-progress: false
+
 on:
   schedule:
     - cron: "*/15 * * * *"
