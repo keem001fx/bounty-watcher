@@ -2,7 +2,8 @@
   "queries": [
     { "label": "General bounty search", "q": "label:bounty state:open is:issue" },
     { "label": "Coolify", "q": "repo:coollabsio/coolify label:Bounty state:open is:issue" },
-    { "label": "Terminator (mediar-ai)", "q": "repo:mediar-ai/terminator label:Bounty state:open is:issue" }
+    { "label": "Terminator (mediar-ai)", "q": "repo:mediar-ai/terminator label:Bounty state:open is:issue" },
+    { "label": "Screenpipe (mediar-ai)", "q": "repo:mediar-ai/screenpipe label:Bounty state:open is:issue" }
   ],
   "blocked_owners": [
     "zhangjiayang6835-cyber",
