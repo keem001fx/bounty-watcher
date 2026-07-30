@@ -87,19 +87,64 @@ def passes_filters(issue, config):
     return True
 
 
+CLAIMED_SIGNALS = [
+    "has claimed all rewards",
+    "already assigned",
+    "already working on this",
+    "already started working",
+]
+
+
+def get_comment_bodies(issue):
+    """Fetch an issue's comments (only if there are any) and return their text."""
+    if not issue.get("comments"):
+        return []
+    comments_url = issue.get("comments_url")
+    if not comments_url:
+        return []
+    headers = {"Accept": "application/vnd.github+json"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+    try:
+        resp = requests.get(comments_url, headers=headers, timeout=30)
+        resp.raise_for_status()
+        return [c.get("body", "") for c in resp.json()]
+    except Exception as e:
+        print(f"Could not fetch comments: {e}")
+        return []
+
+
+def looks_already_claimed(issue):
+    for body in get_comment_bodies(issue):
+        lower = (body or "").lower()
+        if any(signal in lower for signal in CLAIMED_SIGNALS):
+            return True
+    return False
+
+
 def format_message(issue, source_label):
     repo_full_name = issue["repository_url"].split("/repos/")[-1]
     title = issue.get("title", "(no title)")
     url = issue.get("html_url", "")
     labels = ", ".join(l["name"] for l in issue.get("labels", []))
     created = issue.get("created_at", "")
+
+    body = (issue.get("body") or "").strip()
+    if len(body) > 900:
+        body = body[:900] + "\n...[truncated, open link for the rest]"
+
+    warning = ""
+    if looks_already_claimed(issue):
+        warning = "\n\u26A0\uFE0F COMMENTS SUGGEST THIS MAY ALREADY BE CLAIMED \u2014 check before starting\n"
+
     return (
-        f"\U0001F514 New match: {source_label}\n"
+        f"\U0001F514 New match: {source_label}{warning}\n"
         f"<b>{title}</b>\n"
         f"Repo: {repo_full_name}\n"
         f"Labels: {labels}\n"
         f"Opened: {created}\n"
-        f"{url}"
+        f"{url}\n\n"
+        f"{body}"
     )
 
 
