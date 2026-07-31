@@ -1,0 +1,20 @@
+name: forum-watcher
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'   # every 20 min — adjust alongside the bounty-watcher cron if you want to offset them
+  workflow_dispatch:          # lets you trigger a manual test run from the Actions tab
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python forum_watcher.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
