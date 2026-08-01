@@ -30,5 +30,6 @@
     "[meta]",
     "[direct]"
   ],
-  "require_any_keyword": []
+  "require_any_keyword": [],
+  "min_repo_stars": 5
 }
