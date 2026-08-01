@@ -26,7 +26,7 @@ KEYWORDS = [
 ]
 
 LOOKBACK_SECONDS = 30 * 60  # wider than the 20-min cron interval, avoids missed posts
-HEADERS = {"User-Agent": "forum-watcher/1.0 by u/YOUR_REDDIT_USERNAME"}
+HEADERS = {"User-Agent": "forum-watcher/1.0 by u/K-E-E-MOO1"}
 
 
 def search_subreddit(subreddit, keyword):
