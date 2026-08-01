@@ -11,7 +11,13 @@
     "theselfish",
     "MyZubster-Ecosystem",
     "Danielloni-creator",
-    "zaydenic110"
+    "zaydenic110",
+    "ab2bc",
+    "relayhop"
+  ],
+  "blocked_labels": [
+    "needs-info",
+    "needs-triage"
   ],
   "blocked_keywords": [
     "no code",
