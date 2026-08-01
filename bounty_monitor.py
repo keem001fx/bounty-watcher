@@ -70,9 +70,14 @@ def passes_filters(issue, config):
     body = (issue.get("body") or "").lower()
     repo_full_name = issue["repository_url"].split("/repos/")[-1]
     owner = repo_full_name.split("/")[0].lower()
+    labels = [l["name"].lower() for l in issue.get("labels", [])]
 
     for blocked in config.get("blocked_owners", []):
         if blocked.lower() in owner:
+            return False
+
+    for blocked in config.get("blocked_labels", []):
+        if blocked.lower() in labels:
             return False
 
     for kw in config.get("blocked_keywords", []):
@@ -156,7 +161,7 @@ def main():
 
     queries = config.get(
         "queries",
-        [{"label": "General bounty search", "q": "label:bounty state:open"}],
+        [{"label": "General bounty search", "q": "label:bounty state:open is:issue"}],
     )
 
     found_new = False
