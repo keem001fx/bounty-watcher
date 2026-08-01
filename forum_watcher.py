@@ -46,20 +46,33 @@ def notify(post, subreddit, keyword):
         data={"chat_id": TELEGRAM_CHAT_ID, "text": text},
         timeout=10,
     )
+    print(f"[MATCH] r/{subreddit} — {title}")
 
 
 def run():
     cutoff = time.time() - LOOKBACK_SECONDS
+    checks = 0
+    errors = 0
+    matches = 0
+
+    print(f"Starting run — {len(SUBREDDITS)} subreddits x {len(KEYWORDS)} keywords.")
+
     for subreddit in SUBREDDITS:
         for keyword in KEYWORDS:
+            checks += 1
             try:
                 posts = search_subreddit(subreddit, keyword)
-            except requests.RequestException:
+            except requests.RequestException as e:
+                errors += 1
+                print(f"[ERROR] r/{subreddit} search for \"{keyword}\" failed: {e}")
                 continue
             for post in posts:
                 if post["data"]["created_utc"] >= cutoff:
                     notify(post, subreddit, keyword)
+                    matches += 1
             time.sleep(2)  # be polite between calls
+
+    print(f"Done — {checks} queries run, {errors} failed, {matches} new match(es) sent.")
 
 
 if __name__ == "__main__":
