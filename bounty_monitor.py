@@ -10,6 +10,7 @@ committed back to the repo after every run.
 
 import json
 import os
+import re
 import requests
 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
@@ -20,6 +21,9 @@ CONFIG_FILE = "config.json"
 SEEN_FILE = "seen_issues.json"
 
 MAX_SEEN = 3000
+
+DOLLAR_PATTERN = re.compile(r"\$\s?\d|\busd\b", re.IGNORECASE)
+_repo_star_cache = {}
 
 
 def load_json(path, default):
@@ -65,10 +69,40 @@ def send_telegram(text):
         print(f"Telegram send failed: {resp.status_code} {resp.text}")
 
 
+def get_repo_full_name(issue):
+    return issue["repository_url"].split("/repos/")[-1]
+
+
+def get_repo_stars(owner, repo):
+    """Fetch a repo's star count, with a per-run cache so repeated issues
+    from the same repo only cost one extra API call. Returns None (not 0)
+    on any failure, so a transient API error never wrongly rejects an issue."""
+    key = f"{owner}/{repo}"
+    if key in _repo_star_cache:
+        return _repo_star_cache[key]
+    headers = {"Accept": "application/vnd.github+json"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+    try:
+        resp = requests.get(f"https://api.github.com/repos/{key}", headers=headers, timeout=30)
+        resp.raise_for_status()
+        stars = resp.json().get("stargazers_count")
+    except Exception as e:
+        print(f"Could not fetch repo stars for {key}: {e}")
+        stars = None
+    _repo_star_cache[key] = stars
+    return stars
+
+
+def mentions_dollar_amount(issue):
+    text = f"{issue.get('title', '')} {issue.get('body', '')}"
+    return bool(DOLLAR_PATTERN.search(text))
+
+
 def passes_filters(issue, config):
     title = (issue.get("title") or "").lower()
     body = (issue.get("body") or "").lower()
-    repo_full_name = issue["repository_url"].split("/repos/")[-1]
+    repo_full_name = get_repo_full_name(issue)
     owner = repo_full_name.split("/")[0].lower()
     labels = [l["name"].lower() for l in issue.get("labels", [])]
 
@@ -87,6 +121,13 @@ def passes_filters(issue, config):
     require_any = config.get("require_any_keyword", [])
     if require_any:
         if not any(kw.lower() in title or kw.lower() in body for kw in require_any):
+            return False
+
+    min_stars = config.get("min_repo_stars")
+    if min_stars is not None:
+        owner_name, repo_name = repo_full_name.split("/", 1)
+        stars = get_repo_stars(owner_name, repo_name)
+        if stars is not None and stars < min_stars:
             return False
 
     return True
@@ -128,7 +169,7 @@ def looks_already_claimed(issue):
 
 
 def format_message(issue, source_label):
-    repo_full_name = issue["repository_url"].split("/repos/")[-1]
+    repo_full_name = get_repo_full_name(issue)
     title = issue.get("title", "(no title)")
     url = issue.get("html_url", "")
     labels = ", ".join(l["name"] for l in issue.get("labels", []))
@@ -140,7 +181,9 @@ def format_message(issue, source_label):
 
     warning = ""
     if looks_already_claimed(issue):
-        warning = "\n\u26A0\uFE0F COMMENTS SUGGEST THIS MAY ALREADY BE CLAIMED \u2014 check before starting\n"
+        warning += "\n\u26A0\uFE0F COMMENTS SUGGEST THIS MAY ALREADY BE CLAIMED \u2014 check before starting\n"
+    if not mentions_dollar_amount(issue):
+        warning += "\n\U0001F4B0 No dollar amount detected in the text \u2014 verify the payout before starting\n"
 
     return (
         f"\U0001F514 New match: {source_label}{warning}\n"
