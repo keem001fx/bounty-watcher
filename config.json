@@ -22,13 +22,13 @@
   "blocked_keywords": [
     "no code",
     "agentic",
-    "1000 usd",
     "urgent",
     "usdc",
     "agent-bounties",
     "ai-agent-welcome",
     "[meta]",
-    "[direct]"
+    "[direct]",
+    "leaderboard points"
   ],
   "require_any_keyword": [],
   "min_repo_stars": 5
