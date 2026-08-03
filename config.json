@@ -17,7 +17,8 @@
   ],
   "blocked_labels": [
     "needs-info",
-    "needs-triage"
+    "needs-triage",
+    "status:competition"
   ],
   "blocked_keywords": [
     "no code",
