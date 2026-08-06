@@ -104,14 +104,17 @@ def passes_filters(issue, config):
     body = (issue.get("body") or "").lower()
     repo_full_name = get_repo_full_name(issue)
     owner = repo_full_name.split("/")[0].lower()
-    labels = [l["name"].lower() for l in issue.get("labels", [])]
+    # Normalized (whitespace-stripped) so "status:competition" and
+    # "status: competition" are treated as the same label — some repos
+    # aren't consistent about spacing in their own label names.
+    labels = [re.sub(r"\s+", "", l["name"].lower()) for l in issue.get("labels", [])]
 
     for blocked in config.get("blocked_owners", []):
         if blocked.lower() in owner:
             return False
 
     for blocked in config.get("blocked_labels", []):
-        if blocked.lower() in labels:
+        if re.sub(r"\s+", "", blocked.lower()) in labels:
             return False
 
     for kw in config.get("blocked_keywords", []):
