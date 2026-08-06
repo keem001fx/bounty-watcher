@@ -3,7 +3,8 @@
     { "label": "General bounty search", "q": "label:bounty state:open is:issue" },
     { "label": "Coolify", "q": "repo:coollabsio/coolify label:Bounty state:open is:issue" },
     { "label": "Terminator (mediar-ai)", "q": "repo:mediar-ai/terminator label:Bounty state:open is:issue" },
-    { "label": "Screenpipe (mediar-ai)", "q": "repo:mediar-ai/screenpipe label:Bounty state:open is:issue" }
+    { "label": "Screenpipe (mediar-ai)", "q": "repo:mediar-ai/screenpipe label:Bounty state:open is:issue" },
+    { "label": "Tenstorrent tt-metal (easy)", "q": "repo:tenstorrent/tt-metal label:bounty_difficulty/easy state:open is:issue" }
   ],
   "blocked_owners": [
     "zhangjiayang6835-cyber",
@@ -13,7 +14,8 @@
     "Danielloni-creator",
     "zaydenic110",
     "ab2bc",
-    "relayhop"
+    "relayhop",
+    "Ikalus1988"
   ],
   "blocked_labels": [
     "needs-info",
